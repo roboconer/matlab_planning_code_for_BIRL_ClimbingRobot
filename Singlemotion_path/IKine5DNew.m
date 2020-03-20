@@ -74,10 +74,25 @@ for i = 1:2
         s3_ = sqrt(s3_sq);
     end
     
+    %/////这是New版本的
     theta(2*i-1,3) = ClampJAngle(CurConfigs(3),atan2(s3_,c3_));
     % 另一种解,怎么把两个值赋给同一个内存空间！！
     theta(2*i,3) = ClampJAngle(CurConfigs(3),atan2(-s3_,c3_));
     
+%     %/////这是22版本的
+%         theta(2*i-1,3) = ClampJAngle(CurConfigs(3),atan2(s3_,c3_));
+%      if theta(2*i-1,3) <-pi
+%          theta(2*i-1,3) = theta(2*i-1,3) +2*pi;
+%      elseif  theta(2*i-1,3) >pi
+%          theta(2*i-1,3) = theta(2*i-1,3) -2*pi;
+%      end
+%     % 另一种解,怎么把两个值赋给同一个内存空间！！
+%     theta(2*i,3) = ClampJAngle(CurConfigs(3),atan2(-s3_,c3_));
+%     if theta(2*i,3) <-pi
+%          theta(2*i,3) = theta(2*i-1,3) +2*pi;
+%      elseif  theta(2*i,3) >pi
+%          theta(2*i,3) = theta(2*i-1,3) -2*pi;
+%      end
 end
 
 if ~Sol_Flag(1) && ~Sol_Flag(3)   %腰关节确定无解

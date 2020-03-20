@@ -71,6 +71,42 @@ for j = 1:size(wall_planning_points,1) - 2
     bas_y = cross(bas_z,bas_x);
     bas_R_w_b = [bas_x',bas_y',bas_z'];%R_w_b
 
+    %将障碍物坐标点转换到壁面坐标系下（这个数组obs_p存放了全部壁面障碍点）
+    num_obstructs = 1;
+    for i = 1:num_surfaces%求解机器人工作空间内的有效障碍物
+        if obstruct_height{i} == 0
+            continue;
+        end
+        num_ob2 = length(obstruct_height{i});
+        obs_p(num_obstructs*8-7:(num_obstructs + num_ob2 - 1)*8,:)  = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
+        % obs_p(1:8,:) = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
+         num_obstructs = num_obstructs + num_ob2;
+    end
+    
+    %判断机器人工作空间内是否有障碍物
+    testobj =base_point + Vnm*link_1;
+    obs_p= [];
+    num_obstructs = 1;
+    valiable_obstruct_index = [] ;
+    if size(obs_p,1)>0
+        for i=1:floor(size(obs_p,1)/8)
+            [ dis,po1,po2] = dis_compute(testobj,obs_p(i*8-7:i*8,:),1);
+            if dis <= 2*link_2+link_1 %伸直状态
+                valiable_obstruct_index(num_obstructs) = i;
+               % obs_p2(num_obstructs*8+1:num_obstructs*8+8,:) = obs_p(i*8-7:i*8,:);
+                num_obstructs = num_obstructs +1;
+            end
+        end
+    end
+    if size(valiable_obstruct_index,1) ==0
+        obs_p2 = zeros(4,3);
+    else   
+        obs_p2 = zeros(length(valiable_obstruct_index)*8,3);
+        for i = 1:length(valiable_obstruct_index)
+            obs_p2(i*8-7:i*8,:) = obs_p(valiable_obstruct_index(i)*8-7:valiable_obstruct_index(i)*8,:);
+        end
+    end
+    %翻转末端Z轴
     if step_option ==1
         stp_R_w_s = eye(3);
         stp_R_w_s(1:3,2) = stp_R_w_s(1:3,2)*-1;
@@ -100,65 +136,18 @@ for j = 1:size(wall_planning_points,1) - 2
     Ba(j,:)=base_point;
     Ba_R{j}=bas_R_w_b;
     
-    %将障碍物坐标点转换到壁面坐标系下（这个数组obs_p存放了全部壁面障碍点）
-    num_obstructs = 1;
-    for i = 1:num_surfaces                            
-        if obstruct_height{i} == 0
-            continue;
-        end
-        num_ob2 = length(obstruct_height{i});
-        obs_p(num_obstructs*8-7:(num_obstructs + num_ob2 - 1)*8,:)  = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
-        % obs_p(1:8,:) = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
-         num_obstructs = num_obstructs + num_ob2;
-    end
-    
-    if step_option ==1    %%壁面单步运动规划
-        testobj =base_point + Vnm*link_1;
-        obs_p= [];
-       
+   
 
-        num_obstructs = 1;
-        for i = 1:num_surfaces
-            if obstruct_height{i} == 0
-                continue;
-            end
-            num_ob2 = length(obstruct_height{i});
-            obs_p(num_obstructs*8-7:(num_obstructs + num_ob2 - 1)*8,:)  = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
-            % obs_p(1:8,:) = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
-            num_obstructs = num_obstructs + num_ob2;
-        end
-       
+    if step_option ==1    %%壁面单步运动规划
+
         
-        num_obstructs = 1;
-        valiable_obstruct_index = [];
-        %判断机器人工作空间内是否有障碍物
-        if size(obs_p,1)>0
-            for i=1:floor(size(obs_p,1)/8)
-                [ dis,po1,po2] = dis_compute(testobj,obs_p(i*8-7:i*8,:),1);
-                if dis <= 2*link_2+link_1 %伸直状态
-                    valiable_obstruct_index(num_obstructs) = i;
-                   % obs_p2(num_obstructs*8+1:num_obstructs*8+8,:) = obs_p(i*8-7:i*8,:);
-                    num_obstructs = num_obstructs +1;
-                end
-            end
-        end
-        if size(valiable_obstruct_index,1) ==0
-            obs_p2 = zeros(4,3);
-        else   
-            obs_p2 = zeros(length(valiable_obstruct_index)*8,3);
-            for i = 1:length(valiable_obstruct_index)
-                obs_p2(i*8-7:i*8,:) = obs_p(valiable_obstruct_index(i)*8-7:valiable_obstruct_index(i)*8,:);
-            end
-        end
     %[joint_ang ] = colli_avoidance( map_border,start_point,end_point,base_point,obs_p2 );
     %[last_bas_R joint_ang{j}] = colli_avoidance(  surface_step{1},start_point,end_point,base_point,obs_p2,bas_R_w_b ); 
         tic
         [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance( base_surface,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
         toc
     else            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%壁面过渡运动规划
-        obs_p= [];
         %%壁面过渡运动规划
-        testobj =base_point + Vnm*link_1;
         num_obsur = 3;
       %  obs_p = 0;
 
@@ -182,37 +171,7 @@ for j = 1:size(wall_planning_points,1) - 2
                 end
             end
         end
-        num_obstructs = 1;
-        for i = 1:num_surfaces                            %求解机器人工作空间内的有效障碍物
-            if obstruct_height{i} == 0
-                continue;
-            end
-            num_ob2 = length(obstruct_height{i});
-            obs_p(num_obstructs*8-7:(num_obstructs + num_ob2 - 1)*8,:)  = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
-            % obs_p(1:8,:) = map_obs( expand_surface{i},obstruct_borders{i},obstruct_height{i} );
-             num_obstructs = num_obstructs + num_ob2;
-        end
      %obs_p
-        num_obstructs = 1;
-        if size(obs_p,1)>1
-            for i=1:floor(size(obs_p,1)/8)
-                [ dis,po1,po2] = dis_compute(testobj,obs_p(i*8-7:i*8,:),1);
-                if dis <= 2*link_2+link_1
-                    valiable_obstruct_index(num_obstructs) = i;
-                   % obs_p2(num_obstructs*8+1:num_obstructs*8+8,:) = obs_p(i*8-7:i*8,:);
-                    num_obstructs = num_obstructs +1;
-                end
-            end
-        end
-        if valiable_obstruct_index ==0
-            obs_p2 = zeros(4,3);   %表示工作空间内无障碍物
-        else  
-            obs_p2 = zeros(length(valiable_obstruct_index)*8,3);
-            for i = 1:length(valiable_obstruct_index)
-                obs_p2(i*8-7:i*8,:) = obs_p(valiable_obstruct_index(i)*8-7:valiable_obstruct_index(i)*8,:);
-            end
-        end
-    end
 
     % surface_step={expand_surface{1},expand_surface{2},expand_surface{1}};
     %[joint_ang{j}] = colli_avoidance22( surface_step,start_point,end_point,base_point,obs_p2,1 );

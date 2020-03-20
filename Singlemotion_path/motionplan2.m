@@ -83,6 +83,29 @@ for j = 1:size(wall_planning_points,1) - 2
          num_obstructs = num_obstructs + num_ob2;
     end
     
+    %判断机器人工作空间内是否有障碍物
+    testobj =base_point + Vnm*link_1;
+    obs_p= [];
+    num_obstructs = 1;
+    valiable_obstruct_index = [] ;
+    if size(obs_p,1)>0
+        for i=1:floor(size(obs_p,1)/8)
+            [ dis,po1,po2] = dis_compute(testobj,obs_p(i*8-7:i*8,:),1);
+            if dis <= 2*link_2+link_1 %伸直状态
+                valiable_obstruct_index(num_obstructs) = i;
+               % obs_p2(num_obstructs*8+1:num_obstructs*8+8,:) = obs_p(i*8-7:i*8,:);
+                num_obstructs = num_obstructs +1;
+            end
+        end
+    end
+    if size(valiable_obstruct_index,1) ==0
+        obs_p2 = zeros(4,3);
+    else   
+        obs_p2 = zeros(length(valiable_obstruct_index)*8,3);
+        for i = 1:length(valiable_obstruct_index)
+            obs_p2(i*8-7:i*8,:) = obs_p(valiable_obstruct_index(i)*8-7:valiable_obstruct_index(i)*8,:);
+        end
+    end
     %翻转末端Z轴
     if step_option ==1
         stp_R_w_s = eye(3);
@@ -112,46 +135,14 @@ for j = 1:size(wall_planning_points,1) - 2
     end
     Ba(j,:)=base_point;
     Ba_R{j}=bas_R_w_b;
-    
+
     if step_option ==1    %%壁面单步运动规划
-        testobj =base_point + Vnm*link_1;
-        obs_p= [];
- 
-        
-        
-        %判断机器人工作空间内是否有障碍物
-        num_obstructs = 1;
-        valiable_obstruct_index = [] ;
-        if size(obs_p,1)>0
-            for i=1:floor(size(obs_p,1)/8)
-                [ dis,po1,po2] = dis_compute(testobj,obs_p(i*8-7:i*8,:),1);
-                if dis <= 2*link_2+link_1 %伸直状态
-                    valiable_obstruct_index(num_obstructs) = i;
-                   % obs_p2(num_obstructs*8+1:num_obstructs*8+8,:) = obs_p(i*8-7:i*8,:);
-                    num_obstructs = num_obstructs +1;
-                end
-            end
-        end
-        if size(valiable_obstruct_index,1) ==0
-            obs_p2 = zeros(4,3);
-        else   
-            obs_p2 = zeros(length(valiable_obstruct_index)*8,3);
-            for i = 1:length(valiable_obstruct_index)
-                obs_p2(i*8-7:i*8,:) = obs_p(valiable_obstruct_index(i)*8-7:valiable_obstruct_index(i)*8,:);
-            end
-        end
-    %[joint_ang ] = colli_avoidance( map_border,start_point,end_point,base_point,obs_p2 );
-    %[last_bas_R joint_ang{j}] = colli_avoidance(  surface_step{1},start_point,end_point,base_point,obs_p2,bas_R_w_b ); 
         tic
         [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance( base_surface,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
         toc
     else            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%壁面过渡运动规划
-        obs_p= [];
         %%壁面过渡运动规划
-        testobj =base_point + Vnm*link_1;
         num_obsur = 3;
-      %  obs_p = 0;
-
         %2020.1.11注释
         if any(surface_step_index(1:3) == 0)
            % joint_ang = 0;
@@ -160,6 +151,7 @@ for j = 1:size(wall_planning_points,1) - 2
             return;
         end
 
+        %判断工作空间内有可能碰到的壁面
         for i = 1:num_surfaces 
             [ dis,po1,po2] = dis_compute(testobj,surface{i},3);
             if dis <= 2*link_2+link_1 
@@ -172,41 +164,16 @@ for j = 1:size(wall_planning_points,1) - 2
                 end
             end
         end
-     %obs_p
-        num_obstructs = 1;
-        if size(obs_p,1)>1
-            for i=1:floor(size(obs_p,1)/8)
-                [ dis,po1,po2] = dis_compute(testobj,obs_p(i*8-7:i*8,:),1);
-                if dis <= 2*link_2+link_1
-                    valiable_obstruct_index(num_obstructs) = i;
-                   % obs_p2(num_obstructs*8+1:num_obstructs*8+8,:) = obs_p(i*8-7:i*8,:);
-                    num_obstructs = num_obstructs +1;
-                end
-            end
+        
+        tic
+        if j ==16
+            [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance2( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,2);
+            continue;
+        elseif j ==17
+            [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance33( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
+        else
+            [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance2( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
         end
-        if valiable_obstruct_index ==0
-            obs_p2 = zeros(4,3);   %表示工作空间内无障碍物
-        else  
-            obs_p2 = zeros(length(valiable_obstruct_index)*8,3);
-            for i = 1:length(valiable_obstruct_index)
-                obs_p2(i*8-7:i*8,:) = obs_p(valiable_obstruct_index(i)*8-7:valiable_obstruct_index(i)*8,:);
-            end
-        end
+        toc
     end
-
-    % surface_step={expand_surface{1},expand_surface{2},expand_surface{1}};
-    %[joint_ang{j}] = colli_avoidance22( surface_step,start_point,end_point,base_point,obs_p2,1 );
-    tic
-    if j ==16
-        [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance2( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,2);
-        continue;
-    elseif j ==17
-        [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance33( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
-    else
-        [last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance2( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
-    end
-    toc
-%[last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance2( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
-%[last_bas_R,last_stp_R,last_joint,joint_ang{j}] = colli_avoidance33( surface_step,start_point,end_point,base_point,obs_p2,bas_R_w_b,stp_R_w_s,first_joint,1);
-end
 end
