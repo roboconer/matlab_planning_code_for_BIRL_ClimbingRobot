@@ -118,6 +118,7 @@ for j = 1:size(wall_planning_points,1) - 2
         obs_p= [];
  
         
+        
         %判断机器人工作空间内是否有障碍物
         num_obstructs = 1;
         valiable_obstruct_index = [] ;
