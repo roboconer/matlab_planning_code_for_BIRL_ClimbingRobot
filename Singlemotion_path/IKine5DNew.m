@@ -184,7 +184,8 @@ for i = 1:4
             abs(theta(i,3)-CurConfigs(3)) + ...
             abs(theta(i,4)-CurConfigs(4));
             %abs(theta(i,5)-CurConfigs(5));
-        if theta(i,3)<=0    
+%          if ( theta(i,3) >= 0 ) && (theta(i, 2) >= 0 )  
+         if theta(i,3)<=0  
             if ~result  %第一次得到有效解，先进行初始化
                 result = i;
                 best = criterion(i);
