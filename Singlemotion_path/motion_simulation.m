@@ -10,6 +10,7 @@ function [] = motion_simulation(Ba,Ba_R,Ang,filename)  %将路径规划结果做仿真，并
                 saveFlag = 0;
             end
             
+            
             % 清空机器人的句柄，以保证能多次画图
           hRobot = [];
             
