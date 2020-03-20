@@ -116,7 +116,8 @@ for j = 1:size(wall_planning_points,1) - 2
     if step_option ==1    %%壁面单步运动规划
         testobj =base_point + Vnm*link_1;
         obs_p= [];
-
+ 
+        
         %判断机器人工作空间内是否有障碍物
         num_obstructs = 1;
         valiable_obstruct_index = [] ;
