@@ -5,6 +5,7 @@ n=length(n_size);
 P=zeros(n,3);
 T=zeros(n,4);
 [A,num_point,num_sur,pstart,pend] = surfaces;
+[~, pstart, pend] = shrink_surfaces;
 % pstart = [4.0656,6.91087,1.91813];
 % pend = [5.70673 6.3332 9.46937];
 N=zeros(1,n);

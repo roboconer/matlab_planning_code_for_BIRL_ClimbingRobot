@@ -4,7 +4,8 @@ function [ se_footstep3d ] = footstep_sequence( pathstr,map_border,obs_border,ob
 global foot;global map_bor;global acr_obs;global att_obs;global byp_obs;global hei_obs;
 [map_bor,acr_obs,att_obs,byp_obs,hei_obs ] = map( map_border,obs_border,obs_height ); 
 tic
-foot= footgen(0.05,10,60);   %根据参数生成落足点策略，第一个参数为距离间隔，第二个为角度间隔，第三个为角度范围（包括顺逆时针）
+% foot= footgen(0.05,10,60);   %根据参数生成落足点策略，第一个参数为距离间隔，第二个为角度间隔，第三个为角度范围（包括顺逆时针）
+foot= footgen(0.05,10,60); 
 r_max=0.58;
 r_min=0.4;
 
@@ -477,15 +478,23 @@ if norm(ciro-pathstr(num_pa,:))<r_min              %起始点和目标点之间小于一步可
      apathline2 = [ciro;-vec+ciro];
      
      %2020.2.21添加：步态策略添加水平垂直方向
+     d1 = 60;
+     d2 = -d1;
      rotationMatrix1 = [0, -1; 1, 0]; %90°
      rotationMatrix2 = [0, 1; -1, 0]; %-90°
+%      rotationMatrix3 = [cosd(d1), -sind(d1); sind(d1), cosd(d1)]; 
+%      rotationMatrix4 = [cosd(d2), -sind(d2); sind(d2), cosd(d2)]; 
      apathline3 = [ciro; (rotationMatrix1 * vec')'+ciro];
      apathline4 = [ciro; (rotationMatrix2 * vec')'+ciro];
+%      apathline5 = [ciro; (rotationMatrix3 * vec')'+ciro];
+%      apathline6 = [ciro; (rotationMatrix4 * vec')'+ciro];
      
      [foot_str] = footstep_strategy(apathline);
      [foot_str2] = footstep_strategy(apathline2);
      [foot_str3] = footstep_strategy(apathline3);
      [foot_str4] = footstep_strategy(apathline4);
+%      [foot_str5] = footstep_strategy(apathline5);
+%      [foot_str6] = footstep_strategy(apathline6);
      
      %前后方向整合到一起
      num_f1 = size(foot_str,1);
@@ -500,6 +509,15 @@ if norm(ciro-pathstr(num_pa,:))<r_min              %起始点和目标点之间小于一步可
      for i=1:size(foot_str4,1)
          foot_str(num_f1+i,:) = foot_str4(i,:);
      end
+%      num_f1 = size(foot_str,1);
+%      for i=1:size(foot_str5,1)
+%          foot_str(num_f1+i,:) = foot_str5(i,:);
+%      end
+%      num_f1 = size(foot_str,1);
+%      for i=1:size(foot_str6,1)
+%          foot_str(num_f1+i,:) = foot_str6(i,:);
+%      end
+     
      %num_str = size(foot_str,1)+size(foot_str2,1);%%%%%%%%%%
      num_str = size(foot_str,1);
      foot_hei(num_step) = foot_height(ciro);

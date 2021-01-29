@@ -9,7 +9,7 @@ function [] = motion_simulation(Ba,Ba_R,Ang,filename)  %将路径规划结果做仿真，并
             else
                 saveFlag = 0;
             end
-            
+                        draw_obstruct
             
             % 清空机器人的句柄，以保证能多次画图
           hRobot = [];
@@ -26,39 +26,40 @@ function [] = motion_simulation(Ba,Ba_R,Ang,filename)  %将路径规划结果做仿真，并
 %             axis equal;                 % 轴比例相等
 
 %          
-            
-            % 9根杆场景
-           % view(-23,20);
-            view(-9,-1); 
-            view(-187,-39);
-            view(-88,21);
-             view(-15,33);
-         %   view(-44,13);
-           % axis([0,2000,-500,2600,-150,2600]); 
+%             
+%             % 9根杆场景
+%            % view(-23,20);
+%             view(-9,-1); 
+%             view(-187,-39);
+%             view(-88,21);
+             view(-150,-320);
+%          %   view(-44,13);
+%            % axis([0,2000,-500,2600,-150,2600]); 
             path_co = 2;
 %             % 25根杆场景
 %             view(294.8,11);
 %             axis([0,6000,0,6000,0,6000]);     % 轴大小25根杆件时
             %==================================================================
             plot_surface2;
-%             input_map2;
-%             plot_obs(map_border,obs_border,obs_height,eye(3),[0 0 0]);
+            [map_border, obstruct_border, obstruct_height] = input_map2;
+             plot_obs(map_border,obstruct_border,obstruct_height,eye(3),[0 0 0]);
 %              axis([0,8500,0,7000,0,1000]);
-              axis([-2000,1500,-2000,1500,0,2000]);
+%               axis([-3000,2500,-3000,3000,0,3000]);
+axis([0,3000,-1500,0, 0,2500])
 %             fz = 16;                    % 字号
 %             xlabel('\it{x}\rm(\it{mm}\rm)','FontSize',fz,'FontName','Times New Roman');
 %             ylabel('\it{y}\rm(\it{mm}\rm)','Fontsize',fz,'FontName','Times New Roman');
 %             zlabel('\it{z}\rm(\it{mm}\rm)','Fontsize',fz,'FontName','Times New Roman');
 %             set(gca,'fontsize',fz);
 %             set(gca,'Fontname','Times New Roman');
-          set(gcf,'Units','inches','Position',[0.5 0.5 13 11]);  % 窗口位置和大小
+          set(gcf,'Units','inches','Position',[2 1 13 5]);  % 窗口位置和大小
            set(gcf,'doublebuffer','on')                             % 消除抖动
             
             % 再画机器人
 %             drobot = self.robot;        % 专门用于画图
              color = 'g';
                CurHMatrix = eye(4);
-            drobot = struct('DoFs',5,'LinksLen',[340.7,293.2,293.2,340.7],'ModuleRadii',50,...
+            drobot = struct('DoFs',5,'LinksLen',[329,293.2,293.2,329],'ModuleRadii',50,...
                         'CurGraspMtx',CurHMatrix,'CurJAs',zeros(1,5),'FixedGripper',1,'TarGraspMtx',eye(4,4),...
                           'TarJAs',[0,0,0,0,0],'hIKine',@IKine5D,'hLink',@Linkage5D);
             
@@ -139,11 +140,13 @@ function [] = motion_simulation(Ba,Ba_R,Ang,filename)  %将路径规划结果做仿真，并
                     MoveRobot(hRobot,drobot,1);
                      [ T,joi_p1 ] =  Kine5D( aStep(i,:) ,4);
                      joi_p1 = (Ba_R{k}*joi_p1')'+Ba(k,:)*1000;
-                    if path_co ==1
-                     plot3(joi_p1(:,1), joi_p1(:,2),joi_p1(:,3),'.m','LineWidth',0.1);
-                    else
-                         plot3(joi_p1(:,1), joi_p1(:,2),joi_p1(:,3),'.k','LineWidth',0.1);
-                    end
+                     
+                     %%%%%%%%%%%画轨迹
+%                     if path_co ==1
+%                      plot3(joi_p1(:,1), joi_p1(:,2),joi_p1(:,3),'.m','LineWidth',0.1);
+%                     else
+%                          plot3(joi_p1(:,1), joi_p1(:,2),joi_p1(:,3),'.k','LineWidth',0.1);
+%                     end
                     % 更新当前关节角度
                     drobot.CurJAs = drobot.TarJAs;
                     % ================================================= 
@@ -155,9 +158,8 @@ function [] = motion_simulation(Ba,Ba_R,Ang,filename)  %将路径规划结果做仿真，并
                         %Frame = getframe;
                         writeVideo(aviobj,Frame);
                     end
-                  
                   end
-                pause(0.2);  % 每一步夹持上后延时1s
+%                 pause(0.1);  % 每一步夹持上后延时1s
                 if strcmp(color,'g')
                     color = 'r';
                 else

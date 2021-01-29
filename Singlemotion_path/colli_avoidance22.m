@@ -362,7 +362,7 @@ end
       [ T,joi_po(i,:) ] =  Kine5D( joint_ang(i,:) ,4);
   end
       plot3(joi_po(:,1), joi_po(:,2),joi_po(:,3),'-k','LineWidth',2);
-      axis([-2000,2000,-2000,2000,0,2000])
+%       axis([-2000,2000,-2000,2000,0,2000])
 end
 
 

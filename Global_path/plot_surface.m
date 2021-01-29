@@ -45,9 +45,9 @@ end
 for i=1:num_sur
     Vn(i,:)=cross(A{i}(2,:)-A{i}(1,:),A{i}(3,:)-A{i}(2,:));   %计算多边形法向量和中心点
     Vn_norm=norm(Vn(i,:));
-    Vn(i,:)=Vn(i,:)/Vn_norm*600;
+    Vn(i,:)=Vn(i,:)/Vn_norm*300;
     %quiver3(A{i}(2,1),A{i}(2,2),A{i}(2,3),Vn(i,1),Vn(i,2),Vn(i,3),'k','filled','LineWidth',1,'maxheadsize',1.3);
-    mArrow3([A{i}(2,1),A{i}(2,2),A{i}(2,3)],[Vn(i,1),Vn(i,2),Vn(i,3)]+[A{i}(2,1),A{i}(2,2),A{i}(2,3)],'color','m','stemWidth',25,'facealpha',0.7);
+    mArrow3([A{i}(2,1),A{i}(2,2),A{i}(2,3)],[Vn(i,1),Vn(i,2),Vn(i,3)]+[A{i}(2,1),A{i}(2,2),A{i}(2,3)],'color','m','stemWidth',15,'facealpha',0.3);
 end
 
 
@@ -62,7 +62,6 @@ end
 %  plot3(Pstart(1,1),Pstart(1,2),Pstart(1,3),'-k*','LineWidth',1);
 % plot3(Pend(1,1),Pend(1,2),Pend(1,3),'-k*','LineWidth',1);
 
-axis equal 
 % 
 % set(gca,'XTick',0:2000:10000)                      %设置坐标轴范围、间距
 % set(gca,'YTick',2000:2000:10000)
@@ -78,19 +77,23 @@ axis equal
 % set(gca,'xticklabel',mod(0:1:5,6));
 % set(gca,'yticklabel',mod(1:1:5,6));
 % set(gca,'zticklabel',mod(1:1:5,6));
+
+% DrawRobotDemo;
+%grid on
+
+
+
 fz =17;
-hxl= xlabel('\it{X}\rm/\it{m}','FontSize',fz,'FontName','Times New Roman');        %设置坐标轴格式
-%set(hxl,'Position',[1000 -1500 0]);
-set(hxl,'Position',[500 -1100 0]);
-hyl= ylabel('\it{Y}\rm/\it{m}','FontSize',fz,'FontName','Times New Roman');
-%set(hyl,'Position',[11200 0 0]);
-set(hyl,'Position',[-1000 500 0]);
-hzl= zlabel('\it{Z}\rm/\it{m}','FontSize',fz,'FontName','Times New Roman');
-%set(hzl,'Position',[-500 -1000 5000])
-set(hzl,'Position',[-500 6000 2500]);
+% hxl= xlabel('\it{X}\rm/\it{m}','FontSize',fz,'FontName','Times New Roman');        %设置坐标轴格式
+% %set(hxl,'Position',[1000 -1500 0]);
+% set(hxl,'Position',[500 -1100 0]);
+% hyl= ylabel('\it{Y}\rm/\it{m}','FontSize',fz,'FontName','Times New Roman');
+% %set(hyl,'Position',[11200 0 0]);
+% set(hyl,'Position',[-1000 500 0]);
+% hzl= zlabel('\it{Z}\rm/\it{m}','FontSize',fz,'FontName','Times New Roman');
+% %set(hzl,'Position',[-500 -1000 5000])
+% set(hzl,'Position',[-500 6000 2500]);
 set(gca,'Fontname','Times New Roman');
 set(gca,'fontsize',fz);
 
 viewmtx(47.5,20);
-DrawRobotDemo;
-%grid on

@@ -44,4 +44,4 @@ circle( 0,0,400 );
  Climbot5D.FixedGripper=2;
   DrawRobotmo(Climbot5D,1);
    axis equal;
-   axis([-2000,2000,-2000,2000]);
+   axis([-3000,3000,-3000,3000,0, 3000]);

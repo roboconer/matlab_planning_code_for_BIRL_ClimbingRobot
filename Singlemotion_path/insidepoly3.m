@@ -11,7 +11,7 @@ vec = vec/norm(vec);
 v2 = (point-poly(1,:))/norm(point-poly(1,:));
 % vec2 = cross(poly(1,:)-poly(3,:),poly(2,:)-poly(1,:));
 % vec = (vec +vec2)/2;
-if abs(dot(v2,vec))>2e-3
+if abs(dot(v2,vec))>1e-2
     state = 0;
     return;
 end

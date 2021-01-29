@@ -172,11 +172,11 @@ end
 end_ang(1,1) = end_ang(1,1)+120;
    num_ang = 5;   
 while norm(joint_ang(num_ang,:)-end_ang)>1e-2
-     [ T,joi_pp ] =  Kine5D( joint_ang(num_ang,:) ,4);
+    [ T,joi_pp ] =  Kine5D( joint_ang(num_ang,:) ,4);
 %      plot3(joi_pp(1,1), joi_pp(1,2),joi_pp(1,3),'om','LineWidth',1);
 %         [ T,joi_pp ] =  Kine5D( joint_ang(num_ang,:) ,4);
-      joi_pp = (bas_R*joi_pp')'+ bap_o*1000;
-      plot3(joi_pp(1,1), joi_pp(1,2),joi_pp(1,3),'om','LineWidth',1);
+    joi_pp = (bas_R*joi_pp')'+ bap_o*1000;
+    plot3(joi_pp(1,1), joi_pp(1,2),joi_pp(1,3),'om','LineWidth',1);
     joi_diffe = abs(end_ang - joint_ang(num_ang,:));   %每个关节角之间的差值足够小，直接到达目标点
     if joi_diffe(1:4)< 3
         num_ang = num_ang +1;
@@ -360,7 +360,7 @@ while norm(joint_ang(num_ang,:)-end_ang)>1e-2
 %        [max_diffe,num_j]=max(abs(end_ang(1:4)-joint_ang(num_ang,1:4)));
 %        num_inter = floor(max_diffe/2);
         joint_ang(num_ang+1,:) = joint_ang(num_ang,:) + [(end_ang(1)-joint_ang(num_ang,1))/abs(end_ang(1)-joint_ang(num_ang,1))*3,0,0,0,0];
-       joint_ang(num_ang+1,:) = joint_ang(num_ang+1,:)+  [0,-2,4,-2,0];
+        joint_ang(num_ang+1,:) = joint_ang(num_ang+1,:)+  [0,-2,4,-2,0];
         num_ang = num_ang + 1; 
         continue;
 %              if so_option == 1

@@ -2,6 +2,7 @@ function [ P_path,path_l] = DataManage( particle,velocity,pbest,gbest,max_iterat
 %DATAMANAGE Summary of this function goes here
 %   Detailed explanation goes here
  [A,num_point,num_sur,Pstart,Pend] = surfaces;
+ [A, Pstart,Pend] = shrink_surfaces
 temp=zeros(1,fitness_size);
 N = zeros(1,fitness_size-1);
 P = zeros(fitness_size-1,3);

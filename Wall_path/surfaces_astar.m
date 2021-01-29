@@ -1,4 +1,4 @@
-function [ se_footstep3d,step_op ] = surfaces_astar(x)
+function [ se_footstep3d, step_op ] = surfaces_astar(x)
 %输入：过渡位置，起始点目标点，障碍物位置，高度(后三个参数由surfaces输入)
 %输出：无碰落足点序列
 %2020.1.12:将输出se_footstep3d改成元胞数组
@@ -19,7 +19,7 @@ Xa=[1,0,0];
 Ya=[0,1,0];
 Za=[0,0,1];
 
-%第一个for循环：将壁面顶点扩张，效果为：膨胀一个吸盘半径
+%第一个for循环：将壁面顶点扩张，效果为：收缩一个吸盘半径
 for i=1:num_sur
     %沿1、n顶点的对角线延长
     v1= (A1{i}(num_point(i),:)-A1{i}(1,:))/norm(A1{i}(num_point(i),:)-A1{i}(1,:));
@@ -71,8 +71,8 @@ end
 %R_sw平面坐标系在世界坐标系下的转换矩阵
 %R_ws世界坐标系在平面坐标系下的转换矩阵
 for i =1:num_sur
-R_sw(:,:,i)=[dot(Vx(i,:),Xa),dot(Vy(i,:),Xa),dot(Vz(i,:),Xa);dot(Vx(i,:),Ya),dot(Vy(i,:),Ya),dot(Vz(i,:),Ya);dot(Vx(i,:),Za),dot(Vy(i,:),Za),dot(Vz(i,:),Za)]; 
-R_ws(:,:,i) = R_sw(:,:,i)';
+    R_sw(:,:,i)=[dot(Vx(i,:),Xa),dot(Vy(i,:),Xa),dot(Vz(i,:),Xa);dot(Vx(i,:),Ya),dot(Vy(i,:),Ya),dot(Vz(i,:),Ya);dot(Vx(i,:),Za),dot(Vy(i,:),Za),dot(Vz(i,:),Za)]; 
+    R_ws(:,:,i) = R_sw(:,:,i)';
 end
 
 %第六个for：确定每个壁面的原点
@@ -110,7 +110,7 @@ x=[ Pstart;
 num_op = 0;
 
 %for i=1:2 %mark：这里我不知道2是代表什么，照理说应该是壁面数量才对的；将这里先改成num_sur试试
-se_footstep3d = {}
+se_footstep3d = {};
 % for i=1:num_sur
 for i=1:num_sur
     ps=x(2*i-1,:);%第i个壁面的开始点

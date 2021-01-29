@@ -32,10 +32,10 @@ axis equal
 % set(gca,'xticklabel',mod(0:2:10,12));
 % set(gca,'yticklabel',mod(2:2:10,12));
 % set(gca,'zticklabel',mod(2:2:10,12));
-set(gca,'XTick',0:1000:4000)
- set(gca,'YTick',1000:1000:3000)
- set(gca,'ZTick',1000:1000:4000)
- axis([-1000,4000,-1000,3000,0,4000])
+set(gca,'XTick',0:1000:3000)
+ set(gca,'YTick',-1500:1000:-500)
+ set(gca,'ZTick',0:1000:2500)
+ axis([0,3000,-1500,0, 0,2500])
 set(gca,'xticklabel',mod(0:1:4,5));
 set(gca,'yticklabel',mod(1:1:3,4));
 set(gca,'zticklabel',mod(1:1:4,5));

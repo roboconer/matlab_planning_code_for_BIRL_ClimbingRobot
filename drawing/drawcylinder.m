@@ -8,7 +8,6 @@
 %       sline - 是否显示两底面边线，0表示不显示
 % 输出：hcy - 圆柱3个面的句柄
 function hcy = drawcylinder(PA,PB,r,clr,alpha,sline)
-
 %求出轴心线长，即为圆柱高度
 PAB = PB-PA;
 cylen = norm(PAB);

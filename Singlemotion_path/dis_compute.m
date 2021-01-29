@@ -233,7 +233,7 @@ function [dis,lp] = point_to_line(poi,line)   %Çóµãµ½Ïß¶ÎµÄ×îĞ¡¾àÀë£¬·µ»Ø¾àÀë¼°¶
 end
  
 function [state,pro] = point_pro_poly(point,poly)      %µãÔÚ¶à±ßĞÎÄÚ²¿µÄÍ¶Ó°
-vec = cross(poly(2,:)-poly(1,:),poly(3,:)-poly(2,:));
+vec = cross(poly(2,:)-poly(1,:),poly(3,:)-poly(2,:));  % ·¨ÏòÁ¿´¹Ö±ÃæÏòÀï(ÄæÊ±Õë¶¨Ğò)
 vec = vec/norm(vec);
 prop = point-vec*dot(point-poly(1,:),vec);
 if insidepoly3(prop,poly)==1
@@ -245,7 +245,7 @@ else
 end
 end
 
-function [state] = insidepoly3(point,poly)        %ÅĞ¶ÏµãÊÇ·ñÔÚ¿Õ¼ä¶à±ßĞÎÄÚ²¿
+function [state] = insidepoly3(point,poly)        %ÅĞ¶ÏµãÊÇ·ñÔÚ¿Õ¼ä¶à±ßĞÎÄÚ²¿(µã²»ÔÚÃæÄÚ£¬Ôò·µ»Ø0)
 num_p=size(poly,1);
 mean_p=zeros(1,3);
 kk=0;
@@ -277,7 +277,7 @@ else
 end
 end
 
-function[obs_sur] =obp_tran(obp)%½«´ú±íÕÏ°­ÎïµÄ8¸öÈıÎ¬¿Õ¼äµã×ª»¯ÎªÕÏ°­ÎïÔªËØ£¨5¸öÃæÔªËØºÍ8¸öÏß¶ÎÔªËØ£©
+function[obs_sur] =obp_tran(obp)%½«´ú±íÕÏ°­ÎïµÄ8¸öÈıÎ¬¿Õ¼äµã×ª»¯ÎªÕÏ°­ÎïÔªËØ£¨5¸öÃæÔªËØºÍ12¸öÏß¶ÎÔªËØ£©
     num_ob = size(obp,1)/8;
     obs_sur = zeros(5,4*3,num_ob);
     for i = 1:num_ob

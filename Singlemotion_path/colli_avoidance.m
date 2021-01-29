@@ -2,6 +2,9 @@ function [lastbas_R,laststp_R,lastjoi,joint_ang ] = colli_avoidance( M_sur,stp,e
 
 %  Çó½â±ÚÃæµ¥²½ÎŞÅöÔË¶¯
 %[ joint_ang,p_s ] = joint_angle(stp,enp,bap);
+
+CREATE_G_CODE = 0;
+DRAW = 1;%ÊÇ·ñ»­Í¼£¬1£º»­£¬0£º²»»­
 global BandClamp GModule HollowPart IModule TModuleP1 TModuleP2 SModule;
 [BandClamp,GModule,HollowPart,IModule,TModuleP1,TModuleP2,SModule] = readAllParts();
 CurHMatrix  = eye(4);
@@ -9,41 +12,48 @@ enp_o = enp;
 stp_o = stp;
 bap_o = bap;
 bap1 = bap;
-wrobot = struct('DoFs',5,'LinksLen',[335,293.2,293.2,335],'ModuleRadii',50,...
+wrobot = struct('DoFs',5,'LinksLen',[329,293.2,293.2,329],'ModuleRadii',50,...
 'CurGraspMtx',CurHMatrix,'CurJAs',[0 8.4728 -16.9456 8.4728 0],'FixedGripper',1,'TarGraspMtx',eye(4,4),...
 'TarJAs',[0,0,0,0,0],'hIKine',@IKine5D,'hLink',@Linkage5D);
  wrobot.CurJAs = fir_joi;
 dis_warn = 0.04;  %×¢Òâ¾àÀëÎª4cm
 dis_safe = 0.02;  %×îĞ¡°²È«¾àÀëÎª2cm
 dis = 10000;
-TO_SURFACE_DISTANCE = 0.05;%µ¥²½¹æ»®Ê±£¬ÎüÅÌÌ§ÆğµÄ¾àÀë
-vec_lin = zeros(1,3);
+TO_SURFACE_DISTANCE = 0.15; %µ¥²½¹æ»®Ê±£¬ÎüÅÌÌ§ÆğµÄ¾àÀë
+vec_lin = zeros(1,3);   
 vec_eff = zeros(1,3);
 num_ob = floor(size(obs_p,1)/8);
 wrobot.CurGraspMtx(1:3,4) = bap*1000;
 wrobot.CurGraspMtx(1:3,1:3) = bas_R;
-figure (3);
+%%% »­Í¼
+if DRAW
+  figure (3);
   pp = patch(M_sur(:,1)*1000,M_sur(:,2)*1000,M_sur(:,3)*1000,[0.467,0.533,0.6],'facealpha',0.5,'LineWidth',1);%±ÚÃæ»æÍ¼
   %»­Í¼·¶Î§ÉèÖÃ by:CH
-  set(gca,'xlim',[-100,1500])%½«xÖáÉÏµÄÈ¡Öµ·¶Î§ÉèÖÃÎª[-100,1500] 
+  set(gca,'xlim',[-1000,3000])%½«xÖáÉÏµÄÈ¡Öµ·¶Î§ÉèÖÃÎª[-100,1500] 
   xlabel('x');
-  set(gca,'ylim',[-1500,1500])%½«yÖáÉÏµÄÈ¡Öµ·¶Î§ÉèÖÃÎª[-1500,1500] 
+  set(gca,'ylim',[-1000,3000])%½«yÖáÉÏµÄÈ¡Öµ·¶Î§ÉèÖÃÎª[-1500,1500] 
   ylabel('y');
-  set(gca,'zlim',[200,1500])%½«zÖáÉÏµÄÈ¡Öµ·¶Î§ÉèÖÃÎª[200,1500] 
+  set(gca,'zlim',[0,3000])%½«zÖáÉÏµÄÈ¡Öµ·¶Î§ÉèÖÃÎª[200,1500] 
   zlabel('z');
   hold on 
-   
+end
    if num_ob>=1          %ÅĞ¶ÏÕÏ°­ÎïÊÇ·ñ´æÔÚ
-      obp_tran(obs_p);      %ÕÏ°­Îï»æÍ¼
+       %%% »­Í¼
+    if DRAW
+        obp_tran(obs_p);      %ÕÏ°­Îï»æÍ¼
+    end
      for i = 1:num_ob
               obs_p2(i*8-7:i*8,:) = obs_p(i*8-7:i*8,:);
      end
    end 
-
-plot3(stp(1,1)*1000,stp(1,2)*1000,stp(1,3)*1000,'*g','LineWidth',2);%»­Æğµã
-plot3(enp(1,1)*1000,enp(1,2)*1000,enp(1,3)*1000,'*g','LineWidth',2);%»­ÖÕµã
-axis equal
-
+   
+% %%% »­Í¼
+if DRAW
+    plot3(stp(1,1)*1000,stp(1,2)*1000,stp(1,3)*1000,'*g','LineWidth',2);%»­Æğµã
+    plot3(enp(1,1)*1000,enp(1,2)*1000,enp(1,3)*1000,'*g','LineWidth',2);%»­ÖÕµã
+    axis equal
+end
 num_mp = size(M_sur,1);
 Vnm=cross(M_sur(2,:)-M_sur(1,:),M_sur(3,:)-M_sur(2,:));   %¼ÆËã¶à±ßĞÎ·¨ÏòÁ¿
 Vn_norm=norm(Vnm);
@@ -80,6 +90,9 @@ un_sta = sta_ang(1,5);                               %»úÆ÷ÈË²»±äµÄĞı×ª¹Ø½Ú£¨·Ç»ù
 wrobot.TarGraspMtx(1:3,4) = enp'*1000;        %Çó»úÆ÷ÈËÄ¿±ê¹¹ĞÍµÄ¹Ø½Ú½Ç
 wrobot.CurJAs = sta_ang;
 [Flag, end_ang] = IKine5DNew(wrobot); 
+
+
+
 % %***********************2020.3.15 ĞŞ¸Ä:¼ÓÈë¶ÔÄ¿±ê¹Ø½Ú±äÁ¿µÚÈı¸ö¹Ø½ÚµÄÅĞ¶Ï
 % if end_ang(1,3) > 0
 %     end_ang(1,3) = -end_ang(1,3);
@@ -105,8 +118,11 @@ wrobot.TarJAs =sta_ang;
 wrobot.TarJAs =end_ang;
 %  DrawRobotmo(wrobot,1);
   end_ang
+  
+  
+  
 %%Çó½âÆğÊ¼µãÄ¿±êµãÔÚÍ¬Ò»±ÚÃæµÄÇéĞÎ
-%//////////////////////////////// 1£©ÏÈÈÃ»úÆ÷ÈËÉÏÉı5cm,¶ÔÆğÊ¼µãºÍÄ¿±êµã¸÷ÌáÉıÒ»¶Î¾àÀëÓÃ×÷Æ½»º¿¿½ü±ÚÃæ 
+%//////////////////////////////// 1£©ÏÈÈÃ»úÆ÷ÈËÉÏÉıTO_SURFACE_DISTANCE * 100cm,¶ÔÆğÊ¼µãºÍÄ¿±êµã¸÷ÌáÉıÒ»¶Î¾àÀëÓÃ×÷Æ½»º¿¿½ü±ÚÃæ 
 %2020.2.27¸Ä£º½«Õâ¸öÉÏÉı¾àÀë²ÎÊı¸Ä³ÉÈ«¾Ö£¬·½±ãĞŞ¸Ä
  for i = 1:TO_SURFACE_DISTANCE * 100             
     wrobot.TarGraspMtx(1:3,4) = ((stp + Vn*i*0.01)')*1000;
@@ -121,14 +137,17 @@ wrobot.TarJAs =end_ang;
 %//////////////////////////////// end
 
 
-num_ang = 5;
+num_ang = floor(TO_SURFACE_DISTANCE * 100);
 i = 0;
 %///////////////////////////////////////////µÚÒ»¸öwhile
 while norm(joint_ang(num_ang,:)-end_ang)>1e-4%Èç¹ûÉÏÉı5cmµÄ×îºóÒ»²½¸úÄ¿±ê×ËÌ¬×ã¹»½üËÆµÄ»°¾Í²»½øÈëÕâ¸öÑ­»·
     
       [ T,joi_pp ] =  Kine5D( joint_ang(num_ang,:) ,4);%joint_ang(num_ang,:)ÊÇ×îºóÒ»Ö¡µÄ½Ç¶È£»ÕâÀïµÄjoi_ppÊÇ»ù×ù×ø±êÏµÏÂµÄ
       joi_pp = (bas_R*joi_pp')'+ bap1*1000;%joi_pp×ªµ½ÊÀ½ç×ø±êÏµÏÂ
-      plot3(joi_pp(1,1), joi_pp(1,2),joi_pp(1,3),'om','LineWidth',1);%·ÛºìÉ«Ô²È¦£¬ÎüÅÌÖĞĞÄ
+      %%% »­Í¼
+      if DRAW
+        plot3(joi_pp(1,1), joi_pp(1,2),joi_pp(1,3),'om','LineWidth',1);%·ÛºìÉ«Ô²È¦£¬ÎüÅÌÖĞĞÄ
+      end
       joi_diffe = abs(end_ang - joint_ang(num_ang,:));   %Ã¿¸ö¹Ø½Ú½ÇÖ®¼äµÄ²îÖµ×ã¹»Ğ¡£¬Ö±½Óµ½´ïÄ¿±êµã
     
     %////////////³ıÁË¼Ğ³ÖÆ÷£¬Ã¿¸ö½Ç¶È²îĞ¡ÓÚ3¡ãµÄ»°
@@ -164,7 +183,7 @@ while norm(joint_ang(num_ang,:)-end_ang)>1e-4%Èç¹ûÉÏÉı5cmµÄ×îºóÒ»²½¸úÄ¿±ê×ËÌ¬×ã¹
       continue;
     end
     %*****************************end
-    
+      dist = ones(1,num_ob)*10000;
       dis1 = ones(1,num_ob)*10000;
       dis2 = ones(1,num_ob)*10000;
       
@@ -211,7 +230,7 @@ while norm(joint_ang(num_ang,:)-end_ang)>1e-4%Èç¹ûÉÏÉı5cmµÄ×îºóÒ»²½¸úÄ¿±ê×ËÌ¬×ã¹
     for k = 1:num_ob
         if insidepoly3(obs_p2(8*k-7,:),m_sur) == 0
              for j=1:3            %Çó»úÆ÷ÈË±¾ÌåÁ¬¸Ë¾àÀëÕÏ°­ÎïµÄ×îĞ¡¾àÀë
-                 [ dist(j),po1,po2] = dis_compute([joi_p(j,:);joi_p(j+1,:)],obs_p2(i*8-7:i*8,:),2);
+                 [ dist(j),po1,po2] = dis_compute([joi_p(j,:);joi_p(j+1,:)],obs_p2(k*8-7:k*8,:),2);
                    dis2(k) = min(dist);
              end
         else
@@ -273,6 +292,7 @@ while norm(joint_ang(num_ang,:)-end_ang)>1e-4%Èç¹ûÉÏÉı5cmµÄ×îºóÒ»²½¸úÄ¿±ê×ËÌ¬×ã¹
         joint_ang(num_ang+1,:) = joint_ang(num_ang,:) + [0 3 0 -2 0];%Ïò»ù×ùËõÒ»µã
         [ dis1kt,po1,po2] = dis_compute(joi_p(4,:),obs_p2(min_ob1*8-7:min_ob1*8,:),1);%ÓÃ»úÆ÷ÈËÄ©¶ËµãÈ¥¶Ô×î½üÕÏ°­×÷²âÊÔ
         pok = (po1-po2)/norm(po1-po2);
+        %TODO
         joi_ps = point_pro_sur(joi_p(4,:),M_sur);
         
          %////////////%ÅĞ¶ÏÕÏ°­Îï¶ÔÄ©¶ËµãµÄÓ°ÏìºÍÖ÷ÔË¶¯µÄ·½ÏòÊÇ·ñÏàÍ¬£¨ÒÔÎüÅÌÔÚ±ÚÃæµÄÍ¶Ó°µãºÍ»ù×ùÖ®¼äµÄÁ¬ÏßÎª·Ö½ç£¬ÅĞ¶ÏÕÏ°­ÎïÓëÖÕµãÊÇ·ñÎ»ÓÚÍ¬Ò»²à£©
@@ -377,6 +397,7 @@ while norm(joint_ang(num_ang,:)-end_ang)>1e-4%Èç¹ûÉÏÉı5cmµÄ×îºóÒ»²½¸úÄ¿±ê×ËÌ¬×ã¹
      %*****************************end
      
 end
+if CREATE_G_CODE ~= 1 %Éú³ÉG´úÂëµÄ»°Òª°ÑÏÂ½µ¹ı³ÌÈ¥µô
  %////////////%Ê¹»úÆ÷ÈËÄ©¶ËµãÍùZÖá·½Ïò¿¿½üTO_SURFACE_DISTANCE * 100cm
  for i = 1:TO_SURFACE_DISTANCE * 100              
       [ T,end_p] = Kine5D( joint_ang(num_ang-1+i,:) ,4);
@@ -393,19 +414,36 @@ end
         break;
        end
  end
-num_ang = num_ang + 6;
+num_ang = num_ang + TO_SURFACE_DISTANCE * 100;
+end
+
 joint_ang = [sta_ang;joint_ang];
-num_joi = size(joint_ang,1);
+num_ang = num_ang + 1;
 joint_ang(:,5) = un_sta;
+
+% joint_ang(:,5) = 0;
+% if CREATE_G_CODE == 1 %Èç¹ûÒªÉú³É×ÔÖ÷Îü¸½µÄG´úÂë£¬ÒªÔÚ¹Ø½Ú½ÇĞòÁĞµÄ×îºó½«µÚÎå¹Ø½ÚÇåÁã
+%     joint_ang(num_ang,5) = 0;
+% %     tmp_joint_angle = [joint_ang(num_ang,1:4), 0];
+% %     joint_ang = [joint_ang;tmp_joint_angle];
+% %     num_ang = num_ang + 1;
+% end
+num_joi = size(joint_ang,1);
+
  %*****************************end
  
 
- 
-  wrobot.TarJAs =joint_ang(6,:);
-  DrawRobotmo(wrobot,1);%»­Æğµã´¦»úÆ÷ÈËÌ§ÆğµÄÄ£ĞÍ
-   wrobot.TarJAs =joint_ang(num_ang-6,:);
-   DrawRobotmo(wrobot,1);%»­ÖÕµã´¦»úÆ÷ÈËÌ§ÆğµÄÄ£ĞÍ
-   aa = abs(floor((end_ang(1)-sta_ang(1))/4));
+    wrobot.TarJAs =joint_ang(1,:);
+  %%% »­Í¼
+    if DRAW
+        DrawRobotmo(wrobot,1);
+    end
+    wrobot.TarJAs =joint_ang(num_ang,:);
+   %%% »­Í¼
+    if DRAW
+        DrawRobotmo(wrobot,1);%»­ÖÕµã´¦»úÆ÷ÈËÌ§ÆğµÄÄ£ĞÍ
+    end
+    aa = abs(floor((end_ang(1)-sta_ang(1))/4));
 
 num_pro = num_joi - 10;                  %%¶ÔÂ·¾¶×öÆ½»¬´¦Àí
  num_pro = floor(num_pro/2);
@@ -466,20 +504,20 @@ num_pro = num_joi - 10;                  %%¶ÔÂ·¾¶×öÆ½»¬´¦Àí
     joi_p = joi_p/1000;
     
  for k = 1:num_ob
-        if insidepoly3(obs_p(8*k-7,:),m_sur) ==1
-        eff_p = cir_seem_poly( joi_p(4,:),joi_p(4,:)-joi_p(3,:),0.2,20);
+    if insidepoly3(obs_p(8*k-7,:),m_sur) ==1
+    eff_p = cir_seem_poly( joi_p(4,:),joi_p(4,:)-joi_p(3,:),0.2,20);
    % [ dis1(k),po1,po2] = dis_compute(joi_p(4,:),obs_p2(k*8-7:k*8,:),1);   %ÓÃ»úÆ÷ÈËÄ©¶ËµãÈ¥¶Ô±ÚÃæÕÏ°­×÷²âÊÔ
   [ dis1(k),po1,po2] = dis_compute(eff_p,obs_p2(k*8-7:k*8,:),6); 
-         else
-            continue;
-        end    
+ else
+    continue;
+ end    
  end
     for k = 1:num_ob
         if insidepoly3(obs_p(8*k-7,:),m_sur) ==0
      for j=1:3            %Çó»úÆ÷ÈË±¾ÌåÁ¬¸Ë¾àÀëÕÏ°­ÎïµÄ×îĞ¡¾àÀë
          [ dist(j),po1,po2] = dis_compute([joi_p(j,:);joi_p(j+1,:)],obs_p2(k*8-7:k*8,:),2);
            dis2(k) = min(dist);
-     end
+     end 
         else
             continue;
         end
@@ -500,17 +538,27 @@ num_pro = num_joi - 10;                  %%¶ÔÂ·¾¶×öÆ½»¬´¦Àí
       joi_p(i,:) = (bas_R*joi_p(i,:)')'+bap1*1000;
   end
  
-   T(1:3,2) = T(1:3,2)*-1;
+%     if CREATE_G_CODE == 1 %Èç¹ûÒªÉú³É×ÔÖ÷Îü¸½µÄG´úÂë£¬ÒªÔÚ¹Ø½Ú½ÇĞòÁĞµÄ×îºó½«µÚÎå¹Ø½ÚÇåÁã
+%         enp = enp - Vn*TO_SURFACE_DISTANCE;    %Ä¿±êÎü¸½µãµÄ¸¨ÖúÂ·¾¶¾¶µã
+%         wrobot.TarGraspMtx(1:3,1:3) = stp_R;
+%         wrobot.TarGraspMtx(1:3,4) = enp'*1000;        %Çó»úÆ÷ÈËÄ¿±ê¹¹ĞÍµÄ¹Ø½Ú½Ç
+%         T = wrobot.TarGraspMtx;
+%     end
+    
+  
+   T(1:3,2) = T(1:3,2)*-1;  %Y,ZÖá×ªÁË¹ıÀ´µÄT_base_end
    T(1:3,3) = T(1:3,3)*-1;
   lastbas_R = bas_R*T(1:3,1:3);
-   laststp_R = T(1:3,1:3)';
+   laststp_R = T(1:3,1:3)';  %laststp_RÊÇR_end_base
  % laststp_R = bas_R*lastbas_R';
    laststp_R(1:3,2) =  laststp_R(1:3,2)*-1;
    laststp_R(1:3,3) =  laststp_R(1:3,3)*-1;
    lastjoi=[0,joint_ang(num_ang,4),joint_ang(num_ang,3),joint_ang(num_ang,2),0];%½«¹Ø½Ú½ÇË³Ğòµ¹×ª£¬ÎªÏÂÒ»²½×÷×¼±¸
-  plot3(joi_p(:,1), joi_p(:,2),joi_p(:,3),'-k','LineWidth',2);%ÓÃºÚÏß»­³öÄ©¶ËÂ·¾¶
-      
-     % axis([-1000,1000,-1000,1000,0,500])
+   %%% »­Í¼
+   if DRAW
+    plot3(joi_p(:,1), joi_p(:,2),joi_p(:,3),'-k','LineWidth',2);%ÓÃºÚÏß»­³öÄ©¶ËÂ·¾¶
+    axis([0,3000,-1500,-500, 0,2500])
+   end
 end
 
 

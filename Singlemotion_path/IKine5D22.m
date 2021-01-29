@@ -122,8 +122,8 @@ for i = 1:4
 end
 
 % 关节角限位
-JiontLimitUp = deg2rad([360,230,140,230,360]);
-JiontLimitLow = deg2rad([-360,-50,-140,-50,-360]);
+JiontLimitUp = deg2rad([360,210,120,210,360]);
+JiontLimitLow = deg2rad([-360,-30,-120,-30,-360]);
 
 % 选择最佳结果
 criterion = ones(1,4)*10000;      %可以用inf*ones(1,4)进一步防止错误出现

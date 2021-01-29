@@ -8,6 +8,7 @@ num_s = num_sur-1;
 max_iteration=200;         %最大迭代次数
 swarm_size=100;             %种群规模（粒子数量）
 particle_size=num_s;            %粒子维数（求解变量个数）
+
 tic
  [ C ] = chose_point(  );
            %每个过渡边界包含的线段数(每个壁面的过渡点数量）
