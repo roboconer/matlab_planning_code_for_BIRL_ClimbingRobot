@@ -1,18 +1,19 @@
 # BIRLClimbingRobot
  Matlab code of BIRL ClimbingRobot
 
-## ´úÂëÊ¹ÓÃ
+## ä»£ç ä½¿ç”¨
 
-### 1¡¢±¾´úÂëËùÊÊÓÃµÄ»úÆ÷ÈË
+### 1ã€æœ¬ä»£ç æ‰€é€‚ç”¨çš„æœºå™¨äºº
+    ![avatar](https://ibb.co/GV63vGw)
     ![avatar](biped5d_picture.png)
-### 2¡¢ÊäÈë±ÚÃæÊı¾İ
-    - ½øÈë/Global_path/surfaces.m
-    - `border_vertexs`Îª±ÚÃæµÄn¸ö¶¥µã£¬ÕâÀï×¢ÒâÒ»ÏÂ×ø±êÏµµÄÍ³Ò»¡£ÓÉÓÚÎÒÃÇÊµÑé²É¼¯µÄÊı¾İ×ø±êÏµÎª[x, z, y]£¬ËùÒÔÕâÀïÎªÂú×ã¿ÉÊÓ»¯£¬¶Ô×ø±êÏµ½øĞĞÁËxÖáĞı×ª90¶È
-### 3¡¢ÊäÈëÕÏ°­Îï
-    - ½øÈë/Singlemotion_path/input_map2.m
-    - `obstruct_border` ÎªÕÏ°­ÎïÔÚ±ÚÃæÉÏµÄÏà¶Ô×ø±ê[Èç´úÂëÖĞµÄ`obstruct_border{2}=[-0 0.7; 0.0 0.7; 0.0 1.2; -0 1.2];`±íÊ¾ÕÏ°­ÎïÔÚµÚ¶ş¸ö±ÚÃæÉÏµÄ4¸öµã]
-    - `obstruct_height`ÎªÕÏ°­ÎïÔÚ±ÚÃæµÄ·¨Ïò¸ß¶È
-### 4¡¢°´ÒÔÏÂÇ°ºóÅÅĞòÉèÖÃmatlab´úÂëÂ·¾¶
+### 2ã€è¾“å…¥å£é¢æ•°æ®
+    - è¿›å…¥/Global_path/surfaces.m
+    - `border_vertexs`ä¸ºå£é¢çš„nä¸ªé¡¶ç‚¹ï¼Œè¿™é‡Œæ³¨æ„ä¸€ä¸‹åæ ‡ç³»çš„ç»Ÿä¸€ã€‚ç”±äºæˆ‘ä»¬å®éªŒé‡‡é›†çš„æ•°æ®åæ ‡ç³»ä¸º[x, z, y]ï¼Œæ‰€ä»¥è¿™é‡Œä¸ºæ»¡è¶³å¯è§†åŒ–ï¼Œå¯¹åæ ‡ç³»è¿›è¡Œäº†xè½´æ—‹è½¬90åº¦
+### 3ã€è¾“å…¥éšœç¢ç‰©
+    - è¿›å…¥/Singlemotion_path/input_map2.m
+    - `obstruct_border` ä¸ºéšœç¢ç‰©åœ¨å£é¢ä¸Šçš„ç›¸å¯¹åæ ‡[å¦‚ä»£ç ä¸­çš„`obstruct_border{2}=[-0 0.7; 0.0 0.7; 0.0 1.2; -0 1.2];`è¡¨ç¤ºéšœç¢ç‰©åœ¨ç¬¬äºŒä¸ªå£é¢ä¸Šçš„4ä¸ªç‚¹]
+    - `obstruct_height`ä¸ºéšœç¢ç‰©åœ¨å£é¢çš„æ³•å‘é«˜åº¦
+### 4ã€æŒ‰ä»¥ä¸‹å‰åæ’åºè®¾ç½®matlabä»£ç è·¯å¾„
     matlab_planning_code_for_BIRL_ClimbingRobot/
     matlab_planning_code_for_BIRL_ClimbingRobot/Wall_path
     matlab_planning_code_for_BIRL_ClimbingRobot/PSO_path
@@ -22,4 +23,4 @@
     matlab_planning_code_for_BIRL_ClimbingRobot/Global_path
     matlab_planning_code_for_BIRL_ClimbingRobot/Singlemotion_path
 
-### 5¡¢½øÈëmain.m ,ÔËĞĞ
+### 5ã€è¿›å…¥main.m ,è¿è¡Œ
